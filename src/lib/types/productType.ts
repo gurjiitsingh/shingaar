@@ -49,7 +49,6 @@ export type ProductType = {
   inventoryItemId?: string;
   trackInventory?: boolean;
   allowNegativeStock?: boolean;
-  createdAt?: string;
 };
 
 
