@@ -107,7 +107,7 @@ const DepartmentForm = ({
                     required:
                       "Department name is required",
                   })}
-                  placeholder=" Department"
+                  placeholder="Sweet Department"
                   className="input-style-4 mt-1"
                 />
 
@@ -165,7 +165,7 @@ const DepartmentForm = ({
               <textarea
                 {...register("description")}
                 rows={3}
-                placeholder="Main  production department"
+                placeholder="Main sweet production department"
                 className="input-style-4 mt-1"
               />
             </div>

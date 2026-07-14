@@ -1,18 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { createProductionBatch } from "@/app/(universal)/action/production/createProductionBatch";
+ 
 import { Plus, Trash2, Package } from "lucide-react";
 import { InventoryItemType } from "@/lib/types/InventoryItemType";
 import toast from "react-hot-toast";
 import Link from "next/link";
+import { issueStockToDepartment } from "@/app/(universal)/action/production/departments/issueStockToDepartment";
 
 type Props = {
-  departments: { id: string; name: string }[];
+  departments: { id: string; name: string; employeeCount: number }[];
   inventoryItems: InventoryItemType[];
 };
 
-export default function ProductionBatchForm({
+export default function StockIssueForm({
   departments,
   inventoryItems,
 }: Props) {
@@ -114,9 +115,10 @@ if (!items.length) {
     try {
       const dept = departments.find((d) => d.id === departmentId);
 
-      const res = await createProductionBatch({
+      const res = await issueStockToDepartment({
         departmentId,
         departmentName: dept?.name || "",
+        employeeCount: dept?.employeeCount || 0,
         items,
         note,
       });
@@ -126,7 +128,7 @@ if (!items.length) {
   return;
 }
 
-    toast.success("Batch created successfully");
+    toast.success("Stock issued successfully.");
       setItems([]);
       setNote("");
       setDepartmentId("");
@@ -142,37 +144,39 @@ if (!items.length) {
     <div className="p-6 max-w-5xl   space-y-6 bg-gray-50 min-h-screen">
 
       {/* HEADER */}
-      <div className="flex items-center gap-3">
-        
-       
+   
+
+       <div className="mb-5 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-800">
+            Stock Issue
+          </h1>
+
+          <p className="text-sm text-gray-500">
+            Transfer stock from the main store to a department.
+          </p>
+        </div>
+        <div className="flex gap-4"> 
+             <Link
+            href="/admin/stock-finished/department/return-stock/add"
+            className="inline-flex items-center justify-center rounded-xl bg-slate-400 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-[#00796b]"
+          >
+            Return Stock to main store
+          </Link>
+          <Link
+            href="/admin/stock-finished/department"
+            className="inline-flex items-center justify-center rounded-xl bg-amber-500 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-[#00796b]"
+          >
+            All Departments
+          </Link>
+          <Link
+            href="/admin/stock-finished/department/add"
+            className="inline-flex items-center justify-center rounded-xl bg-[#00897b] px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-[#00796b]"
+          >
+            + Add Department
+          </Link>
+        </div>
       </div>
-
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div><Package className="w-6 h-6 text-blue-600" />
-              <h1 className="text-3xl font-bold text-gray-800">
-                Production Batch
-              </h1>
-              <p className="mt-1 text-sm text-gray-500">
-                Issue stock.
-              </p>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-3">
-              <Link
-                href="/admin/stock-finished/issue/add"
-                className="inline-flex h-11 items-center justify-center rounded-xl bg-red-600 px-5 font-medium text-white shadow-sm transition hover:bg-red-700"
-              >
-                Manual Production
-              </Link>
-
-              <Link
-                href="/admin/stock-finished/issue"
-                className="inline-flex h-11 items-center justify-center rounded-xl border border-red-200 bg-white px-5 font-medium text-red-600 shadow-sm transition hover:bg-red-50"
-              >
-                Production Batches
-              </Link>
-            </div>
-          </div>
 
 
       {/* CARD */}
@@ -180,7 +184,7 @@ if (!items.length) {
 
         {/* Department */}
         <div>
-          <label className="text-sm text-gray-600">Department</label>
+          <label className="text-sm text-gray-600">Destination Department</label>
           <select
             value={departmentId}
             onChange={(e) => setDepartmentId(e.target.value)}
@@ -198,7 +202,7 @@ if (!items.length) {
         {/* ITEMS */}
         <div className="space-y-3">
           <div className="flex justify-between items-center">
-            <h2 className="font-medium text-gray-700">Items</h2>
+            <h2 className="font-medium text-gray-700">Items to Issue</h2>
 
             <button
               onClick={addItem}
@@ -306,7 +310,7 @@ if (!items.length) {
           disabled={loading}
           className="w-full bg-red-600 text-white py-2.5 rounded-lg hover:bg-red-700 transition font-medium"
         >
-          {loading ? "Creating..." : "Create Batch"}
+          {loading ? "Issue Stock..." : "Issue Stock"}
         </button>
       </div>
     </div>
